@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ZZru - Земельные участки</title>
+    <meta name="description" content="Продажа земельных участков в живописных местах. ИЖС, ЛПХ, все коммуникации.">
+    <meta name="keywords" content="земельные участки, купить участок, ИЖС, дача, загородная недвижимость">
+    <style>
+        /* ===== CSS ПЕРЕМЕННЫЕ ДЛЯ ТЕМ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.2s, border-color 0.2s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; background-color: var(--bg-primary); color: var(--text-primary); }
+        body.light-theme { --bg-primary: #ffffff; --bg-secondary: #f9f9f9; --text-primary: #222222; --text-secondary: #555555; --accent: #2e7d32; --accent-light: #4caf50; --card-bg: #f9f9f9; --header-bg: #ffffff; --footer-bg: #f0f0f0; --shadow: rgba(0,0,0,0.1); --slider-btn-bg: rgba(255,255,255,0.7); --slider-btn-color: #333; --cart-bg: #ffffff; --cart-border: #ddd; }
+        body.dark-theme { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #e0e0e0; --text-secondary: #aaaaaa; --accent: #81c784; --accent-light: #a5d6a7; --card-bg: #1e1e1e; --header-bg: #1a1a1a; --footer-bg: #1a1a1a; --shadow: rgba(0,0,0,0.5); --slider-btn-bg: rgba(30,30,30,0.8); --slider-btn-color: #e0e0e0; --cart-bg: #1e1e1e; --cart-border: #444; }
+        body.visually-impaired { --bg-primary: #000000; --bg-secondary: #000000; --text-primary: #ffff00; --text-secondary: #ffff00; --accent: #00ffff; --accent-light: #00ffff; --card-bg: #000000; --header-bg: #000000; --footer-bg: #000000; --shadow: none; --slider-btn-bg: #333333; --slider-btn-color: #ffff00; --cart-bg: #000000; --cart-border: #ffff00; font-size: 19.2px; }
+        body.visually-impaired img { filter: grayscale(100%) contrast(150%); }
+        a { color: var(--accent); text-decoration: none; }
+        button { cursor: pointer; border: none; background: var(--accent); color: white; padding: 8px 16px; border-radius: 4px; font-size: 1rem; transition: background 0.2s; user-select: none; -webkit-tap-highlight-color: transparent; }
+        button:hover { background: var(--accent-light); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* ШАПКА */
+        header { background-color: var(--header-bg); box-shadow: 0 2px 5px var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 15px 0; }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--accent); position: relative; user-select: none; }
+        .logo::before { content: "🏡"; font-size: 1.8rem; margin-right: 5px; }
+        nav ul { display: flex; gap: 30px; list-style: none; }
+        nav a { color: var(--text-primary); font-weight: 500; user-select: none; }
+        .theme-controls { display: flex; gap: 10px; align-items: center; }
+        .theme-btn { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--accent); padding: 6px 12px; font-size: 0.9rem; user-select: none; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 1.8rem; margin-left: 10px; color: var(--accent); user-select: none; -webkit-tap-highlight-color: transparent; }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; user-select: none; }
+
+        /* СЛАЙДЕР */
+        .slider-section { margin: 30px 0; }
+        .slider { position: relative; width: 100%; height: 400px; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px var(--shadow); }
+        .slides { display: flex; height: 100%; transition: transform 0.5s ease; }
+        .slide { min-width: 100%; height: 100%; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 30px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); user-select: none; }
+        .slide:nth-child(1) { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('Фотки/1.PNG'); }
+        .slide:nth-child(2) { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('Фотки/5723_0_picture_0013_640_480_crop.jpg'); }
+        .slide:nth-child(3) { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('Фотки/37093_151_37128_crop.jpg'); }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: var(--slider-btn-bg); color: var(--slider-btn-color); border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .slider-btn.prev { left: 20px; }
+        .slider-btn.next { right: 20px; }
+        .slider-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; border: 2px solid transparent; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .dot.active { background: white; border-color: var(--accent); transform: scale(1.2); }
+
+        /* КАРТОЧКИ УЧАСТКОВ */
+        .lots h2 { margin: 40px 0 20px; font-size: 2rem; color: var(--accent); user-select: none; }
+        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px var(--shadow); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px var(--shadow); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background-color: #ccc; user-select: none; pointer-events: none; }
+        .card-content { padding: 20px; }
+        .card-title { font-size: 1.2rem; margin-bottom: 10px; color: var(--accent); user-select: none; }
+        .card-price { font-size: 1.4rem; font-weight: bold; margin-bottom: 10px; user-select: none; }
+        .card-details { color: var(--text-secondary); margin-bottom: 15px; user-select: none; }
+        .card-btn { display: inline-block; background: var(--accent); color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; margin-right: 8px; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        /* КОРЗИНА (боковая панель) */
+        .cart-overlay { position: fixed; top: 0; right: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; justify-content: flex-end; }
+        .cart-sidebar { width: 400px; max-width: 90%; background: var(--cart-bg); color: var(--text-primary); height: 100%; overflow-y: auto; padding: 20px; box-shadow: -2px 0 5px var(--shadow); display: flex; flex-direction: column; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cart-border); padding-bottom: 10px; margin-bottom: 20px; }
+        .cart-header h3 { margin: 0; }
+        .close-cart { font-size: 1.5rem; cursor: pointer; user-select: none; }
+        .cart-items { flex-grow: 1; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--cart-border); }
+        .cart-item-info { flex: 2; }
+        .cart-item-title { font-weight: bold; }
+        .cart-item-price { font-size: 0.9rem; color: var(--accent); }
+        .cart-item-actions { display: flex; align-items: center; gap: 8px; }
+        .cart-item-actions button { padding: 2px 8px; font-size: 0.8rem; }
+        .cart-item-actions span { min-width: 20px; text-align: center; user-select: none; }
+        .cart-total { margin-top: 20px; padding-top: 10px; border-top: 2px solid var(--accent); text-align: right; font-weight: bold; font-size: 1.2rem; user-select: none; }
+        .checkout-btn { margin-top: 20px; width: 100%; }
+
+        /* ФОРМА ОБРАТНОЙ СВЯЗИ */
+        .contact-form { margin: 60px 0 40px; padding: 30px; background: var(--bg-secondary); border-radius: 8px; }
+        .contact-form h2 { margin-bottom: 20px; }
+        .contact-form input, .contact-form textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--text-secondary); background: var(--bg-primary); color: var(--text-primary); border-radius: 4px; }
+        #formMessage { margin-top: 10px; }
+
+        /* АДМИН-ПАНЕЛЬ */
+        .admin-panel { margin: 40px 0; padding: 20px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--accent); display: none; }
+        .admin-panel h2 { margin-bottom: 20px; }
+        .admin-panel .form-group { margin-bottom: 15px; }
+        .admin-panel label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .admin-panel input, .admin-panel textarea { width: 100%; padding: 8px; border: 1px solid var(--text-secondary); background: var(--bg-primary); color: var(--text-primary); border-radius: 4px; }
+        .admin-panel button { margin-right: 10px; }
+        .lot-item { border: 1px solid var(--accent); padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .lot-info { flex-grow: 1; }
+        .lot-actions button { margin-left: 5px; }
+        .admin-login { text-align: right; margin: 20px 0; }
+
+        /* ПОДВАЛ */
+        footer { background: var(--footer-bg); margin-top: 60px; padding: 40px 0; }
+        .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
+        .footer-contacts p { margin: 5px 0; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { color: var(--text-primary); font-size: 1.5rem; }
+
+        /* МОДАЛЬНОЕ ОКНО ДЛЯ ДЕТАЛЕЙ */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--bg-primary); color: var(--text-primary); width: 90%; max-width: 1000px; max-height: 90vh; border-radius: 12px; box-shadow: 0 10px 30px var(--shadow); animation: fadeIn 0.3s ease-out; overflow: hidden; display: flex; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .close-btn { align-self: flex-end; font-size: 2rem; font-weight: bold; cursor: pointer; padding: 10px 20px; line-height: 1; color: var(--text-primary); user-select: none; }
+        .close-btn:hover { color: var(--accent); }
+        .modal-body { padding: 20px; overflow-y: auto; }
+        .modal-body img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; pointer-events: none; user-select: none; }
+        .modal-body h2 { color: var(--accent); margin-bottom: 15px; }
+        .modal-price { font-size: 1.8rem; font-weight: bold; margin: 15px 0; }
+        .modal-details { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 20px; }
+        .modal-more { border-top: 1px solid var(--text-secondary); padding-top: 20px; margin-top: 20px; }
+
+        /* Всплывающее уведомление */
+        .temp-notify { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; padding: 10px 20px; border-radius: 5px; z-index: 1100; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: opacity 0.3s; pointer-events: none; }
+
+        @media (max-width: 1024px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .header-inner { flex-direction: column; gap: 15px; } nav ul { gap: 20px; } .slider { height: 300px; } .cards-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; text-align: center; } .social-icons { justify-content: center; } }
+        @media (max-width: 480px) { .slider { height: 200px; } .slide { padding: 15px; } }
+    </style>
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container header-inner">
+            <div class="logo">ZZru</div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Главная</a></li>
+                    <li><a href="#lots">Участки</a></li>
+                    <li><a href="#contacts">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="theme-controls">
+                <button class="theme-btn" id="light-theme-btn">Светлая</button>
+                <button class="theme-btn" id="dark-theme-btn">Тёмная</button>
+                <button class="theme-btn" id="visually-impaired-btn">Слабовидящие</button>
+                <div class="cart-icon" id="cartIcon">🛒<span id="cartCount" class="cart-count">0</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="home"></div>
+        <section class="slider-section container">
+            <div class="slider">
+                <div class="slides">
+                    <div class="slide"><div><h2>Участок у озера</h2><p>Идеальное место для загородного дома</p></div></div>
+                    <div class="slide"><div><h2>Лесной массив</h2><p>Участки с вековыми соснами</p></div></div>
+                    <div class="slide"><div><h2>Близость к городу</h2><p>Всего 15 минут от центра</p></div></div>
+                </div>
+                <button class="slider-btn prev">&#10094;</button>
+                <button class="slider-btn next">&#10095;</button>
+                <div class="slider-dots">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                </div>
+            </div>
+        </section>
+
+        <div id="lots"></div>
+        <section class="lots container">
+            <h2>Участки в продаже</h2>
+            <div class="cards-grid"></div>
+        </section>
+
+        <div class="container">
+            <div class="admin-login">
+                <a id="adminLoginLink" style="cursor:pointer; user-select: none;">🔐 Вход для администратора</a>
+            </div>
+            <div id="adminPanel" class="admin-panel">
+                <h2>Панель управления участками</h2>
+                <form id="addLotForm">
+                    <div class="form-group"><label>Название</label><input type="text" id="title" required></div>
+                    <div class="form-group"><label>Цена (руб)</label><input type="number" id="price" required></div>
+                    <div class="form-group"><label>Площадь (соток)</label><input type="number" id="size" required></div>
+                    <div class="form-group"><label>Категория (ИЖС/ЛПХ)</label><input type="text" id="category" required></div>
+                    <div class="form-group"><label>Коммуникации</label><input type="text" id="utilities" required></div>
+                    <div class="form-group"><label>Описание</label><textarea id="description" rows="3"></textarea></div>
+                    <div class="form-group"><label>Путь к изображению (относительный, например Фотки/название.jpg)</label><input type="text" id="image" value="Фотки/example.jpg"></div>
+                    <button type="submit">Добавить</button>
+                    <button type="button" id="cancelEditBtn" style="display:none;">Отменить редактирование</button>
+                </form>
+                <h3>Список участков</h3>
+                <div id="lotsList"></div>
+            </div>
+        </div>
+
+        <section class="contact-form container">
+            <h2>Остались вопросы?</h2>
+            <form id="feedbackForm">
+                <input type="text" placeholder="Ваше имя" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Сообщение" rows="3" required></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+            <div id="formMessage"></div>
+        </section>
+    </main>
+
+    <div id="contacts"></div>
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-contacts"><p>📞 +7 (999) 666-66-67</p><p>✉️ info@zzru.ru</p></div>
+                <div class="social-icons"><a href="#">📘</a><a href="#">📷</a><a href="#">▶️</a></div>
+            </div>
+            <div class="copyright">© 2026 ZZru. Все права защищены.</div>
+        </div>
+    </footer>
+
+    <!-- Корзина (боковая панель) -->
+    <div id="cartOverlay" class="cart-overlay">
+        <div class="cart-sidebar">
+            <div class="cart-header">
+                <h3>Корзина</h3>
+                <span class="close-cart" id="closeCartBtn">&times;</span>
+            </div>
+            <div id="cartItemsList" class="cart-items"></div>
+            <div id="cartTotal" class="cart-total">Итого: 0 ₽</div>
+            <button id="checkoutBtn" class="checkout-btn">Оформить заказ</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== ПЕРЕКЛЮЧЕНИЕ ТЕМ =====
+        const body = document.body;
+        document.getElementById('light-theme-btn').onclick = () => { body.classList.remove('dark-theme','visually-impaired'); body.classList.add('light-theme'); };
+        document.getElementById('dark-theme-btn').onclick = () => { body.classList.remove('light-theme','visually-impaired'); body.classList.add('dark-theme'); };
+        document.getElementById('visually-impaired-btn').onclick = () => { body.classList.remove('light-theme','dark-theme'); body.classList.add('visually-impaired'); };
+
+        // ===== СЛАЙДЕР =====
+        const slides = document.querySelector('.slides');
+        const prevBtn = document.querySelector('.slider-btn.prev');
+        const nextBtn = document.querySelector('.slider-btn.next');
+        const dots = document.querySelectorAll('.dot');
+        let currentIndex = 0;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        function updateSlider(index) {
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            slides.style.transform = `translateX(-${index * 100}%)`;
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+            currentIndex = index;
+        }
+        prevBtn.onclick = () => { updateSlider(currentIndex - 1); resetAutoSlide(); };
+        nextBtn.onclick = () => { updateSlider(currentIndex + 1); resetAutoSlide(); };
+        dots.forEach((dot, idx) => dot.onclick = () => { updateSlider(idx); resetAutoSlide(); });
+        let autoSlideInterval = setInterval(() => updateSlider(currentIndex + 1), 5000);
+        function resetAutoSlide() { clearInterval(autoSlideInterval); autoSlideInterval = setInterval(() => updateSlider(currentIndex + 1), 5000); }
+        updateSlider(0);
+
+        // ===== ХРАНЕНИЕ ДАННЫХ =====
+        const STORAGE_KEY = 'zzru_lots';
+        const CART_KEY = 'zzru_cart';
+        const defaultLots = [
+            { id: 1, title: 'Участок "Сосновый бор"', price: 1200000, size: 10, category: 'ИЖС', utilities: 'электричество', description: 'Красивый участок в сосновом лесу. Рядом озеро.', image: 'Фотки/Сосоновый бор .jpg' },
+            { id: 2, title: 'Участок "У реки"', price: 850000, size: 8, category: 'ЛПХ', utilities: 'электричество, вода', description: 'Участок на берегу реки, отличное место для рыбалки.', image: 'Фотки/участок у реки.jpg' },
+            { id: 3, title: 'Участок "Солнечная долина"', price: 2500000, size: 15, category: 'ИЖС', utilities: 'газ, вода, свет', description: 'Все коммуникации, ровный участок.', image: 'Фотки/realty_main.jpg' },
+            { id: 4, title: 'Участок "Тихий уголок"', price: 1100000, size: 12, category: 'ИЖС', utilities: 'газ, вода', description: 'Спокойное место вблизи леса.', image: 'Фотки/тихий уголок.jpg' },
+            { id: 5, title: 'Участок "Зелёный мыс"', price: 1800000, size: 20, category: 'ИЖС', utilities: 'электричество, вода', description: 'Вид на озеро, большой участок.', image: 'Фотки/зеленый мыс.jpg' },
+            { id: 6, title: 'Участок "Ближний"', price: 950000, size: 6, category: 'ЛПХ', utilities: 'электричество', description: 'Близко к городу, рядом магазины.', image: 'Фотки/ближний.jpg' }
+        ];
+        function initStorage() { if (!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultLots)); }
+        function getAllLots() { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+        function saveLots(lots) { localStorage.setItem(STORAGE_KEY, JSON.stringify(lots)); renderLots(); if (window.renderAdminLots) renderAdminLots(); }
+        function addLot(lot) { const lots = getAllLots(); const newId = lots.length ? Math.max(...lots.map(l=>l.id))+1 : 1; lots.push({...lot, id:newId}); saveLots(lots); }
+        function updateLot(id, updated) { const lots = getAllLots(); const idx = lots.findIndex(l=>l.id===id); if(idx!==-1) { lots[idx]={...lots[idx], ...updated, id}; saveLots(lots); } }
+        function deleteLot(id) { let lots = getAllLots(); lots = lots.filter(l=>l.id!==id); saveLots(lots); }
+        function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+        // ===== ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ =====
+        function showNotify(text) {
+            let el = document.getElementById('tempNotify');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'tempNotify';
+                el.className = 'temp-notify';
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.opacity = '1';
+            el.style.display = 'block';
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 1500);
+        }
+
+        // ===== КОРЗИНА =====
+        let cart = [];
+        function loadCart() {
+            const saved = localStorage.getItem(CART_KEY);
+            if (saved) cart = JSON.parse(saved);
+            else cart = [];
+            updateCartUI();
+        }
+        function saveCart() {
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+            updateCartUI();
+        }
+        function addToCart(lotId, quantity = 1) {
+            const lot = getAllLots().find(l => l.id === lotId);
+            if (!lot) return;
+            const existing = cart.find(item => item.id === lotId);
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                cart.push({ id: lot.id, title: lot.title, price: lot.price, quantity: quantity });
+            }
+            saveCart();
+            showNotify('Товар добавлен в корзину');
+        }
+        function removeFromCart(lotId) {
+            cart = cart.filter(item => item.id !== lotId);
+            saveCart();
+        }
+        function updateQuantity(lotId, newQuantity) {
+            const item = cart.find(i => i.id === lotId);
+            if (item) {
+                if (newQuantity <= 0) removeFromCart(lotId);
+                else { item.quantity = newQuantity; saveCart(); }
+            }
+        }
+        function updateCartUI() {
+            const cartItemsDiv = document.getElementById('cartItemsList');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            const cartCountSpan = document.getElementById('cartCount');
+            if (!cartItemsDiv) return;
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p>Корзина пуста</p>';
+                cartTotalDiv.innerText = 'Итого: 0 ₽';
+                cartCountSpan.innerText = '0';
+                return;
+            }
+            let total = 0;
+            cartItemsDiv.innerHTML = cart.map(item => {
+                const sum = item.price * item.quantity;
+                total += sum;
+                return `
+                    <div class="cart-item" data-id="${item.id}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${escapeHtml(item.title)}</div>
+                            <div class="cart-item-price">${item.price.toLocaleString()} ₽</div>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="cart-decr" data-id="${item.id}">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="cart-incr" data-id="${item.id}">+</button>
+                            <button class="cart-remove" data-id="${item.id}">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            cartTotalDiv.innerText = `Итого: ${total.toLocaleString()} ₽`;
+            cartCountSpan.innerText = cart.reduce((acc, i) => acc + i.quantity, 0);
+            document.querySelectorAll('.cart-decr').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    const item = cart.find(i => i.id === id);
+                    if (item && item.quantity > 1) updateQuantity(id, item.quantity - 1);
+                    else if (item && item.quantity === 1) removeFromCart(id);
+                });
+            });
+            document.querySelectorAll('.cart-incr').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    const item = cart.find(i => i.id === id);
+                    if (item) updateQuantity(id, item.quantity + 1);
+                });
+            });
+            document.querySelectorAll('.cart-remove').forEach(btn => {
+                btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.id)));
+            });
+        }
+
+        // ===== МОДАЛЬНОЕ ОКНО С ДЕТАЛЯМИ =====
+        function showModal(id) {
+            const lot = getAllLots().find(l=>l.id===id);
+            if(!lot) return;
+            let modal = document.getElementById('lotModal');
+            if(!modal) { modal = document.createElement('div'); modal.id='lotModal'; modal.className='modal'; document.body.appendChild(modal); }
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <div class="modal-body">
+                        <img src="${lot.image}" alt="${escapeHtml(lot.title)}" onerror="this.src='Фотки/placeholder.jpg'">
+                        <h2>${escapeHtml(lot.title)}</h2>
+                        <div class="modal-price">${lot.price.toLocaleString()} ₽</div>
+                        <div class="modal-details">${lot.size} соток, ${lot.category}</div>
+                        <div class="modal-details">Коммуникации: ${lot.utilities}</div>
+                        <div class="modal-more">
+                            <p>${escapeHtml(lot.description)}</p>
+                            <p><strong>Документы готовы, кадастровый номер по запросу.</strong></p>
+                        </div>
+                        <button id="modalAddToCart" data-id="${lot.id}" class="card-btn">В корзину</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display='flex';
+            modal.querySelector('.close-btn').onclick = ()=>modal.style.display='none';
+            window.onclick = e=>{ if(e.target===modal) modal.style.display='none'; };
+            const addBtn = modal.querySelector('#modalAddToCart');
+            addBtn.addEventListener('click', () => {
+                addToCart(lot.id, 1);
+                modal.style.display = 'none';
+            });
+        }
+
+        // ===== РЕНДЕР КАРТОЧЕК =====
+        function renderLots() {
+            const container = document.querySelector('.cards-grid');
+            if(!container) return;
+            const lots = getAllLots();
+            container.innerHTML = lots.map(lot=>`
+                <div class="card">
+                    <img src="${lot.image}" alt="${escapeHtml(lot.title)}" class="card-img" onerror="this.src='Фотки/placeholder.jpg'">
+                    <div class="card-content">
+                        <h3 class="card-title">${escapeHtml(lot.title)}</h3>
+                        <p class="card-price">${lot.price.toLocaleString()} ₽</p>
+                        <p class="card-details">${lot.size} соток, ${lot.category}, ${lot.utilities}</p>
+                        <button class="card-btn details-btn" data-id="${lot.id}">Подробнее</button>
+                        <button class="card-btn add-to-cart-btn" data-id="${lot.id}">В корзину</button>
+                    </div>
+                </div>
+            `).join('');
+            document.querySelectorAll('.details-btn').forEach(btn=>btn.addEventListener('click',()=>showModal(parseInt(btn.dataset.id))));
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn=>btn.addEventListener('click',()=>{
+                addToCart(parseInt(btn.dataset.id),1);
+            }));
+        }
+
+        // ===== АДМИНКА =====
+        let editingId = null;
+        function renderAdminLots() {
+            const container = document.getElementById('lotsList');
+            if(!container) return;
+            const lots = getAllLots();
+            container.innerHTML = lots.map(lot=>`
+                <div class="lot-item">
+                    <div class="lot-info"><strong>${escapeHtml(lot.title)}</strong> — ${lot.price.toLocaleString()} ₽, ${lot.size} соток</div>
+                    <div class="lot-actions">
+                        <button class="edit-btn" data-id="${lot.id}">Редактировать</button>
+                        <button class="delete-btn" data-id="${lot.id}">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+            document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',()=>editLot(parseInt(btn.dataset.id))));
+            document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',()=>{ if(confirm('Удалить участок?')) deleteLot(parseInt(btn.dataset.id)); }));
+        }
+        function editLot(id) {
+            const lot = getAllLots().find(l=>l.id===id);
+            if(!lot) return;
+            editingId = id;
+            document.getElementById('title').value = lot.title;
+            document.getElementById('price').value = lot.price;
+            document.getElementById('size').value = lot.size;
+            document.getElementById('category').value = lot.category;
+            document.getElementById('utilities').value = lot.utilities;
+            document.getElementById('description').value = lot.description;
+            document.getElementById('image').value = lot.image;
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            document.querySelector('#addLotForm button[type="submit"]').textContent = 'Сохранить изменения';
+        }
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('addLotForm').reset();
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.querySelector('#addLotForm button[type="submit"]').textContent = 'Добавить';
+        }
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const lotData = {
+                title: document.getElementById('title').value,
+                price: parseInt(document.getElementById('price').value),
+                size: parseInt(document.getElementById('size').value),
+                category: document.getElementById('category').value,
+                utilities: document.getElementById('utilities').value,
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value
+            };
+            if(editingId !== null) { updateLot(editingId, lotData); cancelEdit(); }
+            else { addLot(lotData); document.getElementById('addLotForm').reset(); }
+            renderAdminLots();
+        }
+        let adminAuthenticated = false;
+        const adminPanelDiv = document.getElementById('adminPanel');
+        const adminLoginLink = document.getElementById('adminLoginLink');
+        function checkAdminAuth() { adminPanelDiv.style.display = adminAuthenticated ? 'block' : 'none'; if(adminAuthenticated) renderAdminLots(); }
+        adminLoginLink.onclick = () => {
+            if(!adminAuthenticated) {
+                const pwd = prompt('Введите пароль администратора:');
+                if(pwd === 'admin123') { adminAuthenticated = true; checkAdminAuth(); }
+                else alert('Неверный пароль');
+            } else { adminAuthenticated = false; checkAdminAuth(); alert('Вы вышли из режима администратора'); }
+        };
+        document.getElementById('addLotForm').addEventListener('submit', handleFormSubmit);
+        document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+        // ===== ФОРМА ОБРАТНОЙ СВЯЗИ =====
+        const feedbackForm = document.getElementById('feedbackForm');
+        const formMessage = document.getElementById('formMessage');
+        if(feedbackForm) {
+            feedbackForm.onsubmit = (e) => {
+                e.preventDefault();
+                formMessage.textContent = 'Спасибо! Ваше сообщение отправлено.';
+                formMessage.style.color = 'green';
+                feedbackForm.reset();
+                setTimeout(()=>formMessage.textContent='',3000);
+            };
+        }
+
+        // ===== КОРЗИНА: открытие/закрытие =====
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartIcon = document.getElementById('cartIcon');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        cartIcon.onclick = () => { cartOverlay.style.display = 'flex'; };
+        closeCartBtn.onclick = () => { cartOverlay.style.display = 'none'; };
+        cartOverlay.onclick = (e) => { if(e.target === cartOverlay) cartOverlay.style.display = 'none'; };
+        document.getElementById('checkoutBtn').onclick = () => {
+            if (cart.length === 0) {
+                showNotify('Корзина пуста');
+                return;
+            }
+            showNotify('Заказ оформлен! (демо)');
+            cart = [];
+            saveCart();
+            cartOverlay.style.display = 'none';
+        };
+
+        initStorage();
+        renderLots();
+        loadCart();
+        checkAdminAuth();
+    </script>
+</body>
+</html>
